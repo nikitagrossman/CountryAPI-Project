@@ -31,12 +31,6 @@ class Counter {
     [key: string]: number;
 }
 
-function createTable(countries: Country[]):void {
-    countries.forEach(country => {
-        $('.countryTable').append(`<tr><td>${country.name.common}</td><td>${country.population}</td></tr>`)
-    });
-}
-
 function createTableRegion(countries: Country[]):void {
     const counterRegion: Counter = {
         Asia: 0,
@@ -76,7 +70,9 @@ function displayCountriesInfo(countries: Country[]):void {
     $('.countriesCount').text(`Total number of countries returned is : ${countries.length}`);
     $('.sumAllPop').text(`population of all countries returned is : ${sumPop}`);
     $('.avgPop').text(`Average population of all countries is : ${Math.floor(sumPop / countries.length)}`);
-    createTable(countries);
+    countries.forEach(country => {
+        $('.countryTable').append(`<tr><td>${country.name.common}</td><td>${country.population}</td></tr>`)
+    });
 }
 
 function clearBoard():void {
@@ -101,7 +97,7 @@ function fetchDataAndDisplay(url: string):void {
     });
 }
 
-$('#all').on('click', function():void {
+$('#showAllBtn').on('click', function():void {
     fetchDataAndDisplay('https://restcountries.com/v3.1/all');
 })
 
