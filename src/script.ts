@@ -30,22 +30,17 @@ class Country {
 class Counter {
     [key: string]: number;
 }
+const regionTable = $('.regionTable')
+const currencyTable = $('.currencyTable')
+const countryTable = $('.countryTable')
+const countriesCount = $('.countriesCount')
+const sumAllPop = $('.sumAllPop')
+const avgPop = $('.avgPop')
 
 function createTableRegion(countries: Country[]):void {
-    const counterRegion: Counter = {
-        Asia: 0,
-        Europe: 0,
-        Africa: 0,
-        Americas: 0,
-        Oceania: 0,
-        Antarctic: 0
-    };
-    countries.forEach(country => {
-        counterRegion[country.region]++;
-    });
-    Object.keys(counterRegion).forEach(key => {
-        $('.regionTable').append(`<tr><td>${key}</td><td>${counterRegion[key]}</td></tr>`)
-    });
+    let counterRegion: Counter = {};
+    countries.forEach(country => counterRegion[country.region] = (counterRegion[country.region] || 0) + 1);
+    Object.keys(counterRegion).forEach(key =>regionTable.append(`<tr><td>${key}</td><td>${counterRegion[key]}</td></tr>`));
 }
 
     function createTableCurrency(countries: Country[]):void {
@@ -56,44 +51,30 @@ function createTableRegion(countries: Country[]):void {
                 return;
             }
             let keys = Object.keys(country.currencies);
-            keys.forEach(key => {
-                counterCurrency[key] = (counterCurrency[key]||0) + 1;
-            })
+            keys.forEach(key => counterCurrency[key] = (counterCurrency[key]||0) + 1)
         });
-        Object.keys(counterCurrency).forEach(key => {
-            $('.currencyTable').append(`<tr><td>${key}</td><td>${counterCurrency[key]}</td></tr>`);
-        })
+        Object.keys(counterCurrency).forEach(key => currencyTable.append(`<tr><td>${key}</td><td>${counterCurrency[key]}</td></tr>`))
     }
 
 function displayCountriesInfo(countries: Country[]):void {
-    const sumPop: number = countries.reduce((acc, country) => acc + country.population, 0);
-    $('.countriesCount').text(`Total number of countries returned is : ${countries.length}`);
-    $('.sumAllPop').text(`population of all countries returned is : ${sumPop}`);
-    $('.avgPop').text(`Average population of all countries is : ${Math.floor(sumPop / countries.length)}`);
-    countries.forEach(country => {
-        $('.countryTable').append(`<tr><td>${country.name.common}</td><td>${country.population}</td></tr>`)
-    });
-}
-
-function clearBoard():void {
-    $('.countryTable').empty();
-    $('.regionTable').empty();
-    $('.currencyTable').empty();
+    const sumAllPopulation: number = countries.reduce((acc, country) => acc + country.population, 0);
+    countriesCount.text(`Total number of countries returned is : ${countries.length}`);
+    sumAllPop.text(`population of all countries returned is : ${sumAllPopulation}`);
+    avgPop.text(`Average population of all countries is : ${Math.floor(sumAllPopulation / countries.length)}`);
+    countries.forEach(country =>countryTable.append(`<tr><td>${country.name.common}</td><td>${country.population}</td></tr>`));
 }
 
 function fetchDataAndDisplay(url: string):void {
-    clearBoard()
     $.get({
         url: url,
         dataType: 'json',
         success: function(countries: Country[]) {
+            $('.currencyTable, .currencyTable, .regionTable').empty();
             displayCountriesInfo(countries);
             createTableRegion(countries);
             createTableCurrency(countries);
             },
-            error: function(error) {
-                console.error('Error fetching data:', error);
-            }
+            error: error => console.error('Error fetching data:', error)
     });
 }
 
